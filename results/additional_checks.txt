@@ -1,0 +1,33 @@
+PASS: .secrets mode=700, owned by the normal Ubuntu user
+PASS: .secrets/group34_ed25519 mode=600, owned by the normal Ubuntu user
+PASS: files/devops.pub mode=644, owned by the normal Ubuntu user
+PASS: Private/public key pair matches; no private key contents displayed
+PASS: missing user is rejected; expected nonzero exit=1
+FAIL: User group34_missing_test does not exist
+PASS: wrong primary group is rejected; expected nonzero exit=1
+PASS: User devopsuser exists with home /home/devopsuser and shell /bin/bash
+PASS: Group users exists
+FAIL: Primary group mismatch
+PASS: existing working user is protected; expected nonzero exit=2
+PLAY [A Standard Secure Configuration Applied to Every New Server] *************
+
+TASK [Validate dedicated demonstration account names] **************************
+[ERROR]: Task failed: Action failed: Use a dedicated demo account and non-administrator group.
+Origin: /home/vignesh/secure-server-configuration/secure_server.yml:14:7
+
+12
+13   pre_tasks:
+14     - name: Validate dedicated demonstration account names
+         ^ column 7
+
+fatal: [localhost]: FAILED! => {
+    "assertion": "demo_user not in ['root', 'vignesh', 'nobody']",
+    "changed": false,
+    "evaluated_to": false,
+    "msg": "Use a dedicated demo account and non-administrator group."
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0
+PASS: Bash syntax checks
+PASS: Required deliverables exist, use LF line endings, and include 10 slides and 25 viva answers

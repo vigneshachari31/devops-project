@@ -1,0 +1,9 @@
+PASS: User devopsuser exists with home /home/devopsuser and shell /bin/bash
+PASS: Group devops exists
+PASS: User belongs to primary group devops
+PASS: No membership in the checked privileged groups
+PASS: /home/devopsuser owner=devopsuser group=devops mode=700
+PASS: /home/devopsuser/.ssh owner=devopsuser group=devops mode=700
+PASS: /home/devopsuser/.ssh/authorized_keys owner=devopsuser group=devops mode=600
+PASS: Exact supplied public key is installed
+ALL CHECKS PASSED

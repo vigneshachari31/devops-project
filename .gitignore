@@ -1,0 +1,21 @@
+# Private keys and credentials
+.secrets/
+id_*
+!*.pub
+*.pem
+*.key
+.env
+.env.*
+*password*
+*credential*
+vault*.yml
+vault*.yaml
+# Temporary files and generated caches
+*.retry
+*.tmp
+*.swp
+*~
+__pycache__/
+.ansible/
+.cache/
+.vscode/

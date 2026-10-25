@@ -1,0 +1,106 @@
+---
+- name: A Standard Secure Configuration Applied to Every New Server
+  hosts: demo_servers
+  gather_facts: false
+
+  vars:
+    demo_user: devopsuser
+    demo_group: devops
+    demo_home: "/home/{{ demo_user }}"
+    demo_comment: "Group 34 Ansible demonstration account"
+    public_key_file: "{{ playbook_dir }}/files/devops.pub"
+
+  pre_tasks:
+    - name: Validate dedicated demonstration account names
+      ansible.builtin.assert:
+        that:
+          - demo_user is match('^[a-z][a-z0-9_]{2,30}$')
+          - demo_group is match('^[a-z][a-z0-9_]{2,30}$')
+          - demo_user not in ['root', 'vignesh', 'nobody']
+          - demo_group not in ['root', 'sudo', 'adm', 'wheel', 'docker', 'lxd']
+          - demo_home == '/home/' ~ demo_user
+        fail_msg: Use a dedicated demo account and non-administrator group.
+
+    - name: Validate the supplied public key before changing accounts
+      ansible.builtin.command:
+        argv: [ssh-keygen, -l, -f, "{{ public_key_file }}"]
+      delegate_to: localhost
+      become: false
+      changed_when: false
+
+    - name: Inspect any existing demonstration account
+      ansible.builtin.getent:
+        database: passwd
+        key: "{{ demo_user }}"
+        fail_key: false
+
+    - name: Refuse to repurpose an unrelated existing account
+      ansible.builtin.assert:
+        that:
+          - >-
+            ansible_facts.getent_passwd[demo_user] is none or
+            (ansible_facts.getent_passwd[demo_user][1] | int >= 1000 and
+             ansible_facts.getent_passwd[demo_user][3] == demo_comment and
+             ansible_facts.getent_passwd[demo_user][4] == demo_home)
+        fail_msg: This account already exists and is not owned by this demonstration.
+
+  tasks:
+    - name: Apply the baseline to the dedicated demonstration account
+      become: true
+      block:
+        - name: Create the demonstration group
+          ansible.builtin.group:
+            name: "{{ demo_group }}"
+            state: present
+
+        - name: Create the user with the required primary group and home
+          ansible.builtin.user:
+            name: "{{ demo_user }}"
+            group: "{{ demo_group }}"
+            home: "{{ demo_home }}"
+            shell: /bin/bash
+            comment: "{{ demo_comment }}"
+            create_home: true
+            state: present
+
+        - name: Keep the demonstration home private
+          ansible.builtin.file:
+            path: "{{ demo_home }}"
+            state: directory
+            owner: "{{ demo_user }}"
+            group: "{{ demo_group }}"
+            mode: '0700'
+
+        - name: Protect the SSH directory
+          ansible.builtin.file:
+            path: "{{ demo_home }}/.ssh"
+            state: directory
+            owner: "{{ demo_user }}"
+            group: "{{ demo_group }}"
+            mode: '0700'
+
+        - name: Install the supplied SSH public key
+          ansible.posix.authorized_key:
+            user: "{{ demo_user }}"
+            key: "{{ lookup('ansible.builtin.file', public_key_file) }}"
+            state: present
+            manage_dir: false
+            exclusive: false
+
+        - name: Protect the authorized keys file
+          ansible.builtin.file:
+            path: "{{ demo_home }}/.ssh/authorized_keys"
+            state: file
+            owner: "{{ demo_user }}"
+            group: "{{ demo_group }}"
+            mode: '0600'
+
+    - name: Verify the applied baseline independently
+      become: true
+      ansible.builtin.script:
+        cmd: >-
+          scripts/verify.sh {{ demo_user | quote }} {{ demo_group | quote }}
+          {{ public_key_file | quote }}
+      changed_when: false
+      # This verifier reads the key on the local WSL target.
+      # For a separate SSH target, transfer the public key or adapt verification.

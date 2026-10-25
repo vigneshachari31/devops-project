@@ -1,0 +1,8 @@
+ANSIBLE_NOCOLOR(env: ANSIBLE_NOCOLOR) = True
+CONFIG_FILE() = /home/vignesh/secure-server-configuration/ansible.cfg
+DEFAULT_HOST_LIST(/home/vignesh/secure-server-configuration/ansible.cfg) = ['/home/vignesh/secure-server-configuration/inventory.ini']
+HOST_KEY_CHECKING(/home/vignesh/secure-server-configuration/ansible.cfg) = True
+INTERPRETER_PYTHON(/home/vignesh/secure-server-configuration/ansible.cfg) = /usr/bin/python3
+RETRY_FILES_ENABLED(/home/vignesh/secure-server-configuration/ansible.cfg) = False
+
+GALAXY_SERVERS:

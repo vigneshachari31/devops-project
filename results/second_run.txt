@@ -1,0 +1,45 @@
+
+PLAY [A Standard Secure Configuration Applied to Every New Server] *************
+
+TASK [Validate dedicated demonstration account names] **************************
+ok: [localhost] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [Validate the supplied public key before changing accounts] ***************
+ok: [localhost]
+
+TASK [Inspect any existing demonstration account] ******************************
+ok: [localhost]
+
+TASK [Refuse to repurpose an unrelated existing account] ***********************
+ok: [localhost] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [Create the demonstration group] ******************************************
+ok: [localhost]
+
+TASK [Create the user with the required primary group and home] ****************
+ok: [localhost]
+
+TASK [Keep the demonstration home private] *************************************
+ok: [localhost]
+
+TASK [Protect the SSH directory] ***********************************************
+ok: [localhost]
+
+TASK [Install the supplied SSH public key] *************************************
+ok: [localhost]
+
+TASK [Protect the authorized keys file] ****************************************
+ok: [localhost]
+
+TASK [Verify the applied baseline independently] *******************************
+ok: [localhost]
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=11   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
